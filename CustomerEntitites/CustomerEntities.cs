@@ -7,10 +7,12 @@ namespace CustomerEntities
 {
     public class CustomerEntities : DbContext
     {
+
+
         public CustomerEntities(DbContextOptions<CustomerEntities> options)
-            : base(options)
+                    : base(options)
         {
-            
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -22,6 +24,9 @@ namespace CustomerEntities
 
         public virtual DbSet<CustPassword> CustPassword { get; set; }
 
-       // public virtual DbSet<AddAddress> AddAddress { get; set; }
+
+        //public virtual DbSet<CustomerEditDetails> CustomerEditDetails { get; set; }
+
+        // public virtual DbSet<AddAddress> AddAddress { get; set; }
     }
 }

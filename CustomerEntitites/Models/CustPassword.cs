@@ -11,6 +11,6 @@ namespace CustomerEntities.Models
     public class CustPassword
     {
         public int CustomerId { get; set; }
-        public string CPassword { get; set; }
+        public string? CPassword { get; set; }
     }
 }
