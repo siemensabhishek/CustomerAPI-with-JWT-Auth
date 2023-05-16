@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CustomerEntities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,37 +29,40 @@ namespace WebAPI.Controllers
             return Ok(await _entities.CustAddress.ToListAsync());
         }
 
+
+
         // Implementation of Post method
-        //[HttpPost("AddAddress")]
-        //public async Task<IActionResult> AddAddress(AddAddress addAddress)
-        //{
-        //    var CustAddress = new CustAddress()
-        //    {
-        //        AddressId = addAddress.AddressId,
-        //        AddressText = addAddress.AddressText,
+        [HttpPost("AddAddress")]
+        public async Task<IActionResult> AddAddress(AddAddress addAddress)
+        {
+            var CustAddress = new CustAddress()
+            {
+                AddressId = addAddress.AddressId,
+                AddressText = addAddress.AddressText,
 
-        //    };
-        //    await _entities.CustAddress.AddAsync(CustAddress);
-        //    await _entities.SaveChangesAsync();
-        //    return Ok(CustAddress);
+            };
+            await _entities.CustAddress.AddAsync(CustAddress);
+            await _entities.SaveChangesAsync();
+            return Ok(CustAddress);
 
-        //}
+        }
+
 
         // Implemntation of Put Method
-        //[HttpPut("UpdateAddress/{AddressId}")]
-        //public async Task<IActionResult> UpdateAddress([FromRoute] int AddressId, CustAddress updateAddress)
-        //{
-        //    var _CustAddress = await _entities.CustAddress.FindAsync(AddressId);
-        //    if (_CustAddress != null)
-        //    {
-        //        _CustAddress.AddressText = updateAddress.AddressText;
-        //        _CustAddress.AddressId = updateAddress.AddressId;
-        //        //  CustAddress.AddressId = AddressId;
-        //        _entities.SaveChanges();
-        //        return Ok(_CustAddress);
-        //    }
-        //    return NotFound();
-        //}
+        [HttpPut("UpdateAddress/{AddressId}")]
+        public async Task<IActionResult> UpdateAddress([FromRoute] int AddressId, CustAddress updateAddress)
+        {
+            var _CustAddress = await _entities.CustAddress.FindAsync(AddressId);
+            if (_CustAddress != null)
+            {
+                _CustAddress.AddressText = updateAddress.AddressText;
+                _CustAddress.AddressId = updateAddress.AddressId;
+                _entities.SaveChanges();
+                return Ok(_CustAddress);
+            }
+            return NotFound();
+        }
+
 
         // Implementation fo Delete Method
         [HttpDelete("DeleteAddress/{AddressId}")]

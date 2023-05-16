@@ -21,12 +21,7 @@ namespace CustomerEntities
         }
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<CustAddress> CustAddress { get; set; }
-
         public virtual DbSet<CustPassword> CustPassword { get; set; }
 
-
-        //public virtual DbSet<CustomerEditDetails> CustomerEditDetails { get; set; }
-
-        // public virtual DbSet<AddAddress> AddAddress { get; set; }
     }
 }

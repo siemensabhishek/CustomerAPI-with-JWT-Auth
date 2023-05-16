@@ -11,9 +11,7 @@ namespace WebAPI.Controllers
         private CustomerEntities.CustomerEntities _entities;
 
         //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+
         public CustPasswordController(CustomerEntities.CustomerEntities entities)
         {
             _entities = entities;
@@ -28,7 +26,7 @@ namespace WebAPI.Controllers
         }
 
         // Implementation of the get method
-        
+
         [HttpGet("CustomerPassword")]
         public async Task<IActionResult> GetPassword()
         {
@@ -43,8 +41,8 @@ namespace WebAPI.Controllers
         {
             var Password = new CustPassword()
             {
-                CustomerId= _custPassword.CustomerId,
-                CPassword= _custPassword.CPassword,
+                CustomerId = _custPassword.CustomerId,
+                CPassword = _custPassword.CPassword,
 
             };
             await _entities.CustPassword.AddAsync(Password);
@@ -60,7 +58,6 @@ namespace WebAPI.Controllers
             var password = await _entities.CustPassword.FindAsync(CustomerId);
             if (password != null)
             {
-              //  password.CustomerId = _updateCustPassword.CustomerId;
                 password.CPassword = _updateCustPassword.CPassword;
                 _entities.SaveChanges();
                 return Ok(password);
@@ -74,7 +71,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> RemovePassword([FromRoute] int CustomerId)
         {
             var password = await _entities.CustPassword.FindAsync(CustomerId);
-            if(password != null)
+            if (password != null)
             {
                 _entities.Remove(password);
                 await _entities.SaveChangesAsync();
@@ -85,6 +82,6 @@ namespace WebAPI.Controllers
         }
 
 
-        
+
     }
 }

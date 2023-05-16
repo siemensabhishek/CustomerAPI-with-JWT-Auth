@@ -19,7 +19,7 @@ namespace WebAPI
             services.AddDbContext<CustomerEntities.CustomerEntities>(optionsAction: options =>
                                     options.UseSqlServer(configRoot.GetConnectionString("CustomerDB")));
             services.AddControllers();
-            //  services.AddSwaggerGen();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ViewFinder Hub", Version = "v1" });
@@ -44,7 +44,7 @@ namespace WebAPI
                     {securityScheme, new string[] { }}
                 });
             });
-            //  services.AddRazorPages();
+
 
         }
         public void Configure(WebApplication app, IWebHostEnvironment env)
@@ -69,7 +69,6 @@ namespace WebAPI
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.MapRazorPages();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
             app.Run();
         }

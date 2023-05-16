@@ -28,27 +28,22 @@ namespace WebAPI.Controllers
         static string _refreshToken = "";
 
 
-
-        //public CustTokenController(IConfiguration configuration)
-        //{
-        //    _config = configuration;
-
-        //}
-
         public CustomerController(CustomerEntities.CustomerEntities entities, IConfiguration configuration)
         {
             _entities = entities;
             _config = configuration;
         }
+
+
+
+
+
         [Authorize]
         [HttpGet("")]
         public IActionResult Hello()
         {
             Console.WriteLine("Hello from Customer Controller.");
-            const string HeaderKeyName = "Authorization";
-            Request.Headers.TryGetValue(HeaderKeyName, out StringValues headerValue);
-
-            return Ok(headerValue);
+            return Ok();
         }
 
         [HttpGet("userids")]
@@ -63,40 +58,13 @@ namespace WebAPI.Controllers
             return sb.ToString();
         }
 
-        // login check
 
-        /*
-         * previous code
-        [HttpGet("validCustomer/{id:int}/{password:int}")]
-        public string GetValidCustomer([FromRoute] int id, [FromRoute] int password)
-        {
-            // var contact =  _entities.Customer.FindAsync(id);
-            //  var password = await _entities.CustPassword.FindAsync(CustomerId);
-            CustPassword user = null;
-           
-
-            var _password = _entities.CustPassword.FirstOrDefault(x => x.CustomerId == id);
-            bool response = password.ToString() == _password?.CPassword;
-
-            if (response)
-            {
-                var _token = GenerateToken(user);
-                // adding the custom controler
-                //  HttpContext.Response.Headers.Add("x-my-custom-header", _token);
-                return _token;
-            }
-            return _token;
-        }
-
-        */
 
         // to check if the user is valid or not 
 
         [HttpGet("validCustomer/{id:int}/{password:int}")]
         public List<string> GetValidCustomer([FromRoute] int id, [FromRoute] int password)
         {
-            // var contact =  _entities.Customer.FindAsync(id);
-            //  var password = await _entities.CustPassword.FindAsync(CustomerId);
             CustPassword user = null;
 
             List<string> tokens = new List<string>();
@@ -109,8 +77,6 @@ namespace WebAPI.Controllers
                 _refreshToken = GenerateRefreshToken();
                 tokens.Add(_token);
                 tokens.Add(_refreshToken);
-                // adding the custom controler
-                //  HttpContext.Response.Headers.Add("x-my-custom-header", _token);
                 return tokens;
             }
             return tokens;
@@ -123,13 +89,9 @@ namespace WebAPI.Controllers
             CustPassword user = null;
             string token = GenerateToken(user);
             return token;
-
-            //return _refreshToken;
-
         }
 
 
-        //  [HttpGet("generateRefreshToken")]
 
         public static DateTime Expires;
 
@@ -147,63 +109,14 @@ namespace WebAPI.Controllers
 
 
 
-        [HttpGet("SendAccessAndRefreshToken")]
-        public List<string> SendAccessAndRefreshToken()
-        {
-            var AccessAndRefreshtokens = new List<string>();
-            AccessAndRefreshtokens.Add(_token);
-            AccessAndRefreshtokens.Add(_refreshToken);
-            return AccessAndRefreshtokens;
 
-        }
-
-
-
-
-
-        [HttpGet("from-basic")]
-        public IActionResult ExtractFromBasic()
-        {
-            const string HeaderKeyName = "Authorization";
-            Request.Headers.TryGetValue(HeaderKeyName, out StringValues headerValue);
-
-            return Ok(headerValue);
-        }
-
-
-
-
-
-        /*
-        
-        [HttpGet("validCustomer/{id:int}/{password:int}")]
-        async Task<IActionResult> GetValidCustomer([FromRoute] int id, [FromRoute] int password)
-        {
-            // var contact =  _entities.Customer.FindAsync(id);
-             var _password = await _entities.CustPassword.FindAsync(id);
-
-            //  var _password = _entities.CustPassword.FirstOrDefault(x => x.CustomerId == id);
-            //password.ToString() == _password?.CPassword
-            //if (_password != 12345)
-            //{
-            //    return NotFound();
-            //}
-            return Ok(_password);
-        }
-        
-       */
         // Get Method to get all the deatils of the all Customers
 
         [HttpGet("customer_details")]
 
         public async Task<IActionResult> GetAllCustomer()
         {
-
-            // Adding Custom header response
-
-            //  HttpContext.Response.Headers.Add("x-my-custom-header", "individual response");
             return Ok(await _entities.Customer.ToListAsync());
-
         }
 
 
@@ -221,8 +134,41 @@ namespace WebAPI.Controllers
             return Ok(customer);
         }
 
+        [HttpGet("GetAllCustomerDetails")]
+        public async Task<IActionResult> GetAllCustomerDetails()
+        {
+            List<CustomerEditDetails> customers = new List<CustomerEditDetails>();
+            for (int i = 1; i < 50; i++)
+            {
+                var customer = await _entities.Customer.FindAsync(i);
+                var address = await _entities.CustAddress.FindAsync(customer.AddressId);
+
+                CustomerEditDetails customerEditDetails = new CustomerEditDetails();
+                customerEditDetails.Address = new AddressDetails
+                {
+                    AddressId = address.AddressId,
+                    Address = address.AddressText
+                };
+                customerEditDetails.Id = customer.Id;
+                customerEditDetails.AddressId = customer.AddressId;
+                customerEditDetails.FirstName = customer.FirstName;
+                customerEditDetails.LastName = customer.LastName;
+
+
+                if (customerEditDetails == null)
+                {
+                    return NotFound();
+                }
+                customers.Add(customerEditDetails);
+            }
+            return Ok(customers);
+
+        }
+
+
+
         // Edit customer api get method
-        //  [Authorize]
+        [Authorize]
         [HttpGet("GetFullCustomerDetailById/{id}")]
         public async Task<IActionResult> GetCustomerById([FromRoute] int id)
         {
@@ -230,8 +176,6 @@ namespace WebAPI.Controllers
             var address = await _entities.CustAddress.FindAsync(customer.AddressId);
 
             CustomerEditDetails customerEditDetails = new CustomerEditDetails();
-            //  customerEditDetails.Address.Address = address.AddressText;
-            //  HttpContext.Response.Headers.Add("x-my-custom-header", _token);
             customerEditDetails.Address = new AddressDetails
             {
                 AddressId = address.AddressId,
@@ -251,32 +195,44 @@ namespace WebAPI.Controllers
         }
 
 
-        // Update Cutomer Full deatils by id PUT Method
-        //[HttpPut("UpdateFullCustomerDetailsById/{Id}")]
-        //public async Task<IActionResult> CustomerEditDetails([FromRoute] int Id, CustomerEditDetails updateCustomerReq)
-        //{
-        //    var customer = await _entities.Customer.FindAsync(Id);
-        //    var address = await _entities.CustAddress.FindAsync(customer.AddressId);
-        //    //var customerEditDetails = await _entities.CustomerEditDetails.FindAsync(Id);
-        //    if (customer != null && address != null)
-        //    {
-        //        address.AddressText = updateCustomerReq.Address;
-        //        customer.FirstName = updateCustomerReq.FirstName;
-        //        customer.LastName = updateCustomerReq.LastName;
-        //        customer.AddressId = updateCustomerReq.AddressId;
-        //        customer.Id = updateCustomerReq.Id;
-        //        _entities.SaveChanges();
-        //        return Ok(customer);
-        //    }
-        //    return NotFound();
-        //}
+
+        // add customer
+        [HttpPost("addCustomer")]
+        public async Task<IActionResult> AddCustomer(AddCustomer addcustomer)
+        {
+            var Customer = new Customer()
+            {
+                Id = addcustomer.Id,
+                FirstName = addcustomer.FirstName,
+                LastName = addcustomer.LastName,
+                AddressId = addcustomer.AddressId,
+            };
+            await _entities.Customer.AddAsync(Customer);
+            await _entities.SaveChangesAsync();
+            return Ok(Customer);
+        }
+
+        // Update customer details
+        [HttpPut("UpdateCustomer/{Id}")]
+        public async Task<IActionResult> UpdateCustomer([FromRoute] int Id, UpdateCustomer updateCustomerReq)
+        {
+            var customer = await _entities.Customer.FindAsync(Id);
+            if (customer != null)
+            {
+                customer.FirstName = updateCustomerReq.FirstName;
+                customer.LastName = updateCustomerReq.LastName;
+                customer.AddressId = updateCustomerReq.AddressId;
+                customer.Id = updateCustomerReq.Id;
+                _entities.SaveChanges();
+                return Ok(customer);
+            }
+            return NotFound();
+        }
 
 
-        // 
 
 
-        // Update customer api POST Method
-        // Edit customer api get method
+
 
 
 
@@ -301,43 +257,9 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok("Failed");
+                return NotFound();
             }
         }
-
-
-
-
-
-        //public string GetCustomerDetails()
-        //{
-        //    var _fname = _entities.Customer.Select(_a => _a.FirstName).ToList();
-        //    var _lname = _entities.Customer.Select(_b => _b.LastName).ToList();
-        //    var sb = new StringBuilder();
-        //    //List<_entities.Customer> = new List<_entities.Customer> ;
-        //    foreach (var fname in _fname)
-        //    {
-        //        sb.AppendLine(fname);
-        //    }
-        //    return sb.ToString();
-
-        //}
-
-
-        //[HttpPost("addCustomer")]
-        //public async Task<IActionResult> AddCustomer(AddCustomer addcustomer)
-        //{
-        //    var Customer = new Customer()
-        //    {
-        //        Id = addcustomer.Id,
-        //        FirstName = addcustomer.FirstName,
-        //        LastName = addcustomer.LastName,
-        //        AddressId = addcustomer.AddressId,
-        //    };
-        //    await _entities.Customer.AddAsync(Customer);
-        //    await _entities.SaveChangesAsync();
-        //    return Ok(Customer);
-        //}
 
 
 
@@ -350,12 +272,12 @@ namespace WebAPI.Controllers
 
             const string HeaderKeyName = "Custom";
             Request.Headers.TryGetValue(HeaderKeyName, out StringValues headerVal);
-            string headberValuFromClient = headerVal.ToString();
+            string headerValuFromClient = headerVal.ToString();
             List<string> newlyGeneratedTokens = new List<string>();
             string previousRefreshToken = _refreshToken;
             string previousAccessToken = _token;
 
-            if ((headberValuFromClient == _refreshToken) && (DateTime.Now < Expires))
+            if ((headerValuFromClient == _refreshToken) && (DateTime.Now < Expires))
             {
                 _refreshToken = GenerateRefreshToken();
                 CustPassword user = null;
@@ -363,29 +285,10 @@ namespace WebAPI.Controllers
                 newlyGeneratedTokens.Add(_token);
                 newlyGeneratedTokens.Add(_refreshToken);
             }
-
-            //string newRefreshtoken = GenerateRefreshToken();
             return newlyGeneratedTokens;
 
         }
 
-
-
-        //[HttpPut("UpdateCustomer/{Id}")]
-        //public async Task<IActionResult> UpdateCustomer([FromRoute] int Id, UpdateCustomer updateCustomerReq)
-        //{
-        //    var customer = await _entities.Customer.FindAsync(Id);
-        //    if (customer != null)
-        //    {
-        //        customer.FirstName = updateCustomerReq.FirstName;
-        //        customer.LastName = updateCustomerReq.LastName;
-        //        customer.AddressId = updateCustomerReq.AddressId;
-        //        customer.Id = updateCustomerReq.Id;
-        //        _entities.SaveChanges();
-        //        return Ok(customer);
-        //    }
-        //    return NotFound();
-        //}
 
         [HttpDelete("DeleteCustomer/{Id}")]
         public async Task<IActionResult> DeleteCustomer([FromRoute] int Id)
@@ -404,42 +307,6 @@ namespace WebAPI.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private CustPassword AuthenticateUser(CustPassword user, int id, string password)
-        {
-            CustPassword _user = null;
-            //   var _password = _entities.CustPassword.FirstOrDefault(x => x.CustomerId == id);
-
-            if (user.CustomerId == id && user.CPassword == password)
-            {
-                _user = new CustPassword { CustomerId = 11, CPassword = "123123" };
-
-            }
-            return _user;
-        }
-
-
-
-
-
-
-
-
         private string GenerateToken(CustPassword users)
         {
             var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -448,59 +315,9 @@ namespace WebAPI.Controllers
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"], null, expires: DateTime.Now.AddSeconds(15), signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
-            // return token;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-
-        [AllowAnonymous]
-        [HttpPost("generateToken ")]
-
-        public IActionResult Login(CustPassword user, int id, string password)
-        {
-            IActionResult response = Unauthorized();
-
-            var user_ = AuthenticateUser(user, id, password);
-
-            if (user_ != null)
-            {
-                var token = GenerateToken(user);
-                response = Ok(new { token = token });
-            }
-            return response;
 
         }
-        */
 
-
-        [AllowAnonymous]
-        [HttpPost("generateToken")]
-
-        public IActionResult Login(CustPassword user, int id, string password)
-        {
-            IActionResult response = Unauthorized();
-            //    var user_ = GetValidCustomer(id, password);
-            var user_ = AuthenticateUser(user, id, password);
-
-            if (user_ != null)
-            {
-                var token = GenerateToken(user);
-                response = Ok(new { token = token });
-            }
-            return response;
-
-        }
 
     }
 }
