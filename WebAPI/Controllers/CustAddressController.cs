@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
         {
             _entities = entities;
         }
-        // to check if the Controller is getting hit or not
+
         [Authorize]
         [HttpGet("hello")]
         public string Get()
@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
 
 
 
-        // Implementation of Post method
+        // Implementation of add customer Post method
         [HttpPost("AddAddress")]
         public async Task<IActionResult> AddAddress(AddAddress addAddress)
         {
@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
         }
 
 
-        // Implemntation of Put Method
+        // Implemntation of update customer Put Method
         [HttpPut("UpdateAddress/{AddressId}")]
         public async Task<IActionResult> UpdateAddress([FromRoute] int AddressId, CustAddress updateAddress)
         {

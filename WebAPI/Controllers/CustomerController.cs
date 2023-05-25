@@ -213,6 +213,7 @@ namespace WebAPI.Controllers
         }
 
         // Update customer details
+        [Authorize]
         [HttpPut("UpdateCustomer/{Id}")]
         public async Task<IActionResult> UpdateCustomer([FromRoute] int Id, UpdateCustomer updateCustomerReq)
         {
@@ -228,10 +229,6 @@ namespace WebAPI.Controllers
             }
             return NotFound();
         }
-
-
-
-
 
 
 
@@ -276,11 +273,18 @@ namespace WebAPI.Controllers
             List<string> newlyGeneratedTokens = new List<string>();
             string previousRefreshToken = _refreshToken;
             string previousAccessToken = _token;
+            CustPassword user = null;
 
             if ((headerValuFromClient == _refreshToken) && (DateTime.Now < Expires))
             {
+                //  _refreshToken = GenerateRefreshToken();
+                _token = GenerateToken(user);
+                newlyGeneratedTokens.Add(_token);
+                newlyGeneratedTokens.Add(_refreshToken);
+            }
+            else
+            {
                 _refreshToken = GenerateRefreshToken();
-                CustPassword user = null;
                 _token = GenerateToken(user);
                 newlyGeneratedTokens.Add(_token);
                 newlyGeneratedTokens.Add(_refreshToken);
